@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<meta charset="UTF-8">
+<title>Home Page</title>
+<link th:href="@{/css/main.css}" rel="stylesheet"/>
+<body>
+
+<div th:insert="fragments/header :: header"></div>
+
+<h1>HOME PAGE</h1>
+<select id="selection">
+    <option id="employeeContent" th:value="employeeContent">Employee Content</option>
+    <option id="clientContent" th:value="clientContent">Client Content</option>
+</select>
+<div id="replace_div" th:replace="fragments/">
+    Content goes here
+</div>
+
+<!-- JQury from Google CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+            $(document).ready(function () {
+
+                //call function when page is loaded
+                getContent();
+
+                //set on change listener
+                $('#selection').change(getContent);
+
+                function getContent() {
+
+                    //create url to request fragment
+                    var url = "/";
+                    console.log($('#selection'));
+                    if ($('#selection').val === "employeeContent") {
+                        url = url + "employeeContent";
+                    } else {
+                        url = url + "employeeContent";
+                    }
+
+                    //load fragment and replace content
+                    $('#replace_div').load(url);
+                }
+            })
+
+</script>
+
+</body>
+</html>

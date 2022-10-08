@@ -1,0 +1,30 @@
+server:
+  port: 8090
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/logistics-company?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: logistics-company
+    password: NBUcscb025
+    initialization-mode: always
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  thymeleaf:
+    enabled: true
+    cashe: false
+    check-template: true
+    check-template-location: true
+    template-loader-path: classpath:/templates
+    suffix: .html
+basic:
+  inserts:
+    enable: true
+
+jwt:
+  expiration: 7200 #seconds
+  secret: SuperSecretKey
