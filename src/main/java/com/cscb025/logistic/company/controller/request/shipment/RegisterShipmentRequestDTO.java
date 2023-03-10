@@ -11,16 +11,17 @@ public class RegisterShipmentRequestDTO {
     @NotNull(message = "Total price must not be empty!")
     private Double totalPrice;
 
-//    @NotBlank(message = "Office must not be empty!")
-//    private String officeId;
-
-//    @NotBlank(message = "Office worker(who enters shipment) must not be empty!")
-//    private String officeWorker;
+    @NotBlank(message = "Office must not be empty!")
+    private String officeId;
 
     @NotBlank(message = "Receiver must not be empty!")
     private String receiver;
 
     @NotBlank(message = "Sender must not be empty!")
     private String sender;
+
+    private boolean isSent;
+
+    private boolean isReceived;
 
 }

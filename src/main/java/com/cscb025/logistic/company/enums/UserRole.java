@@ -3,7 +3,7 @@ package com.cscb025.logistic.company.enums;
 public enum UserRole {
     ADMIN("Admin"), EMPLOYEE("Employee"), CLIENT("Client");
 
-    private String name;
+    private final String name;
 
     public String getName() {
         return name;

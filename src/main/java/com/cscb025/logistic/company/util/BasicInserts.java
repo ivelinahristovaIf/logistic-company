@@ -1,5 +1,7 @@
 package com.cscb025.logistic.company.util;
 
+import lombok.AllArgsConstructor;
+
 import com.cscb025.logistic.company.entity.Company;
 import com.cscb025.logistic.company.entity.Employee;
 import com.cscb025.logistic.company.entity.Office;
@@ -17,23 +19,11 @@ import java.util.Optional;
 
 @ConditionalOnProperty(value = "basic.inserts.enable", havingValue = "true")
 @Component
-public class BasicInserts {
+@AllArgsConstructor
+public record BasicInserts(CompanyRepository companyRepository, EmployeeRepository employeeRepository, OfficeRepository officeRepository,
+                           PasswordEncoder encoder) {
 
     private static final String NBU_LOGISTICS = "NBU Logistics";
-
-    private final CompanyRepository companyRepository;
-    private final EmployeeRepository employeeRepository;
-    private final OfficeRepository officeRepository;
-    private final PasswordEncoder encoder;
-
-
-    @Autowired
-    public BasicInserts(CompanyRepository companyRepository, EmployeeRepository employeeRepository, OfficeRepository officeRepository, PasswordEncoder encoder) {
-        this.companyRepository = companyRepository;
-        this.employeeRepository = employeeRepository;
-        this.officeRepository = officeRepository;
-        this.encoder = encoder;
-    }
 
     @PostConstruct
     public void basicInserts() {
@@ -50,7 +40,7 @@ public class BasicInserts {
 
     private Company saveCompany(Company company) {
         Optional<Company> company1 = companyRepository.findByName(company.getName());
-        if (!company1.isPresent()) {
+        if (company1.isEmpty()) {
             company = companyRepository.save(company);
             return company;
         }
@@ -59,7 +49,7 @@ public class BasicInserts {
 
     private Employee saveEmployee(Employee employee) {
         Optional<Employee> employeeOptional = employeeRepository.findByEmail(employee.getEmail());
-        if (!employeeOptional.isPresent()) {
+        if (employeeOptional.isEmpty()) {
             employee.setPassword(encoder.encode(employee.getPassword()));
             employee = employeeRepository.save(employee);
             return employee;
@@ -69,7 +59,7 @@ public class BasicInserts {
 
     private Office saveOffice(Office office) {
         Optional<Office> officeOptional = officeRepository.findByName(office.getName());
-        if (!officeOptional.isPresent()) {
+        if (officeOptional.isEmpty()) {
             office = officeRepository.save(office);
             return office;
         }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -31,9 +30,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler(MultipartException.class)
-//    @ResponseStatus(value = HttpStatus.PAYLOAD_TOO_LARGE)
-//    public ResponseEntity<ErrorMessage> handleMultipartException(MultipartException ex) {
-//        return new ResponseEntity<>(new ErrorMessage(ex.getMostSpecificCause().getMessage()), HttpStatus.PAYLOAD_TOO_LARGE);
-//    }
+    //    @ExceptionHandler(MultipartException.class)
+    //    @ResponseStatus(value = HttpStatus.PAYLOAD_TOO_LARGE)
+    //    public ResponseEntity<ErrorMessage> handleMultipartException(MultipartException ex) {
+    //        return new ResponseEntity<>(new ErrorMessage(ex.getMostSpecificCause().getMessage()), HttpStatus
+    //        .PAYLOAD_TOO_LARGE);
+    //    }
 }

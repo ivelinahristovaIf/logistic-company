@@ -1,14 +1,28 @@
 package com.cscb025.logistic.company.entity;
 
-import com.cscb025.logistic.company.enums.ShipmentStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import com.cscb025.logistic.company.enums.ShipmentStatus;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +48,7 @@ public class Shipment {
     @Column(nullable = false)
     private LocalDateTime dateCreated;
 
-    private LocalDateTime dateReceived;
+    private LocalDate dateReceived;
 
     private LocalDateTime dateUpdated;
 
@@ -58,7 +72,7 @@ public class Shipment {
     @ManyToOne
     @JoinColumn(name = "office_worker_id", nullable = false)
     @NonNull
-    private Employee office_worker; //Who registered shipment
+    private Employee officeWorker; //Who registered shipment
 
     @ManyToOne
     @JoinColumn(name = "receiver_id", nullable = false)

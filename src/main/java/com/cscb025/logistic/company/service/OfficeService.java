@@ -13,28 +13,23 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class OfficeService {
-
-    private final OfficeRepository officeRepository;
-    private final CompanyService companyService;
-
-    public OfficeService(OfficeRepository officeRepository, CompanyService companyService) {
-        this.officeRepository = officeRepository;
-        this.companyService = companyService;
-    }
+public record OfficeService(OfficeRepository officeRepository, CompanyService companyService) {
 
     public OfficeResponseDTO view(String companyId) {
         Office office = getOffice(companyId);
-        return new OfficeResponseDTO(office.getUid(), office.getName(), office.getAddress(), office.getPhone(), office.getCompany().getName());
+        return new OfficeResponseDTO(office.getUid(), office.getName(), office.getAddress(), office.getPhone(),
+                office.getCompany().getName());
     }
 
     public OfficeResponseDTO register(OfficeRequestDTO officeRequest) {
         checkOfficeNameExists(officeRequest.getName());
         Company company = companyService.getCompany(officeRequest.getCompanyId());
 
-        Office office = new Office(officeRequest.getName(), officeRequest.getAddress(), officeRequest.getPhone(), company);
+        Office office = new Office(officeRequest.getName(), officeRequest.getAddress(), officeRequest.getPhone(),
+                company);
         office = officeRepository.save(office);
-        return new OfficeResponseDTO(office.getUid(), office.getName(), office.getAddress(), office.getPhone(), office.getCompany().getName());
+        return new OfficeResponseDTO(office.getUid(), office.getName(), office.getAddress(), office.getPhone(),
+                office.getCompany().getName());
     }
 
     private void checkOfficeNameExists(String name) {
@@ -51,7 +46,6 @@ public class OfficeService {
         return office.get();
     }
 
-
     public OfficeResponseDTO edit(EditOfficeRequestDTO officeRequest) {
         checkOfficeNameExists(officeRequest.getName());
 
@@ -61,10 +55,11 @@ public class OfficeService {
         office.setPhone(officeRequest.getPhone());
 
         office = officeRepository.save(office);
-        return new OfficeResponseDTO(office.getUid(), office.getName(), office.getAddress(), office.getPhone(), office.getCompany().getName());
+        return new OfficeResponseDTO(office.getUid(), office.getName(), office.getAddress(), office.getPhone(),
+                office.getCompany().getName());
     }
 
-    public String deleteOffice(String officeId){
+    public String deleteOffice(String officeId) {
         Office office = getOffice(officeId);
 
         officeRepository.delete(office);

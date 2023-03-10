@@ -1,4 +1,4 @@
-package com.cscb025.logistic.company.controller.request.JWT;
+package com.cscb025.logistic.company.controller.request;
 
 import lombok.Data;
 import lombok.NonNull;

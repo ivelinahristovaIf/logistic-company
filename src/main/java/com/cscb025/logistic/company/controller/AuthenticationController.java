@@ -1,12 +1,12 @@
 package com.cscb025.logistic.company.controller;
 
-import com.cscb025.logistic.company.controller.request.JWT.JwtRequest;
+import com.cscb025.logistic.company.controller.request.JwtRequest;
 import com.cscb025.logistic.company.controller.request.user.EmployeeRegistrationRequestDTO;
 import com.cscb025.logistic.company.controller.response.JWT.JwtResponse;
 import com.cscb025.logistic.company.enums.EmployeeRole;
 import com.cscb025.logistic.company.enums.UserRole;
 import com.cscb025.logistic.company.service.JwtUserDetailsService;
-import com.cscb025.logistic.company.util.JwtTokenUtil;
+import com.cscb025.logistic.company.config.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

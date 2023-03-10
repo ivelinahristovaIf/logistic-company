@@ -1,6 +1,9 @@
 package com.cscb025.logistic.company.service;
 
-import com.cscb025.logistic.company.util.JwtTokenUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.AllArgsConstructor;
+
+import com.cscb025.logistic.company.config.JwtTokenUtil;
 import com.cscb025.logistic.company.controller.request.user.UserLoginRequestDTO;
 import com.cscb025.logistic.company.controller.response.user.UserLoginResponseDTO;
 import com.cscb025.logistic.company.controller.response.user.UserRegistrationResponseDTO;
@@ -8,43 +11,30 @@ import com.cscb025.logistic.company.entity.Client;
 import com.cscb025.logistic.company.entity.Employee;
 import com.cscb025.logistic.company.entity.User;
 import com.cscb025.logistic.company.exception.TokenExpiredException;
-import com.cscb025.logistic.company.exception.EntityNotFoundException;
 import com.cscb025.logistic.company.repository.ClientRepository;
 import com.cscb025.logistic.company.repository.EmployeeRepository;
-import io.jsonwebtoken.ExpiredJwtException;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-public class UserService {
+@AllArgsConstructor
+public record UserService(ClientRepository clientRepository, EmployeeRepository employeeRepository,
+                          JwtTokenUtil jwtTokenUtil, PasswordEncoder encoder,
+                          JwtUserDetailsService jwtUserDetailsService) {
 
     private static final String USER_NOT_FOUND = "User not found!";
+
     private static final String WRONG_CREDENTIALS = "Wrong credentials";
+
     private static final String TOKEN_EXPIRED = "Token has expired";
 
-    private final ClientRepository clientRepository;
-    private final EmployeeRepository employeeRepository;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final PasswordEncoder encoder;
-
-    @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
-
-    @Autowired
-    public UserService(ClientRepository clientRepository, EmployeeRepository employeeRepository, JwtTokenUtil jwtTokenUtil, PasswordEncoder encoder) {
-        this.clientRepository = clientRepository;
-        this.employeeRepository = employeeRepository;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.encoder = encoder;
-    }
-
     public User findByEmail(String email) {
-        User user = null;
+        User user;
         Optional<Employee> employeeOptional = employeeRepository.findByEmail(email);
         if (employeeOptional.isPresent()) {
             Employee employee = employeeOptional.get();
@@ -67,20 +57,20 @@ public class UserService {
         return user;
     }
 
-    public UserRegistrationResponseDTO getUserLoginResponse(UserLoginRequestDTO authenticationRequest) throws TokenExpiredException {
+    public UserRegistrationResponseDTO getUserLoginResponse(
+            UserLoginRequestDTO authenticationRequest) throws TokenExpiredException {
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getEmail());
         User user = findByEmail(authenticationRequest.getEmail());
-        if (user == null) {
-            throw new EntityNotFoundException(USER_NOT_FOUND);
-        }
 
         try {
             authenticate(authenticationRequest, user);
-        } catch (ExpiredJwtException e) {
+        }
+        catch (ExpiredJwtException e) {
             throw new TokenExpiredException(TOKEN_EXPIRED);
         }
 
-        UserLoginResponseDTO userLogin = new UserLoginResponseDTO(user.getUid(),user.getEmail(),"name",user.getUserRole(),"officeID");
+        UserLoginResponseDTO userLogin = new UserLoginResponseDTO(user.getUid(), user.getEmail(), "name",
+                user.getUserRole(), "officeID");
         return new UserRegistrationResponseDTO(jwtTokenUtil.generateToken(userDetails), userLogin);
     }
 

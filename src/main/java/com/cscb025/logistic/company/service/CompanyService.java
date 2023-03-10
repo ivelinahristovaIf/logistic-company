@@ -1,25 +1,21 @@
 package com.cscb025.logistic.company.service;
 
+import lombok.AllArgsConstructor;
+
 import com.cscb025.logistic.company.controller.request.admin.CompanyRequestDTO;
 import com.cscb025.logistic.company.controller.response.admin.CompanyResponseDTO;
 import com.cscb025.logistic.company.entity.Company;
 import com.cscb025.logistic.company.exception.EntityExistsException;
 import com.cscb025.logistic.company.exception.EntityNotFoundException;
 import com.cscb025.logistic.company.repository.CompanyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class CompanyService {
-
-    private final CompanyRepository companyRepository;
-
-    @Autowired
-    public CompanyService(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
+@AllArgsConstructor
+public record CompanyService(CompanyRepository companyRepository) {
 
     public CompanyResponseDTO view(String companyId) {
         Company company = getCompany(companyId);
@@ -45,7 +41,7 @@ public class CompanyService {
 
     Company getCompany(String companyId) {
         Optional<Company> companyOptional = companyRepository.findById(companyId);
-        if (!companyOptional.isPresent()) {
+        if (companyOptional.isEmpty()) {
             throw new EntityNotFoundException("No such company found!");
         }
         return companyOptional.get();
