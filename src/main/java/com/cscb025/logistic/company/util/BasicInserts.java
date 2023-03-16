@@ -1,7 +1,5 @@
 package com.cscb025.logistic.company.util;
 
-import lombok.AllArgsConstructor;
-
 import com.cscb025.logistic.company.entity.Company;
 import com.cscb025.logistic.company.entity.Employee;
 import com.cscb025.logistic.company.entity.Office;
@@ -9,7 +7,6 @@ import com.cscb025.logistic.company.enums.EmployeeRole;
 import com.cscb025.logistic.company.repository.CompanyRepository;
 import com.cscb025.logistic.company.repository.EmployeeRepository;
 import com.cscb025.logistic.company.repository.OfficeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,11 +16,20 @@ import java.util.Optional;
 
 @ConditionalOnProperty(value = "basic.inserts.enable", havingValue = "true")
 @Component
-@AllArgsConstructor
-public record BasicInserts(CompanyRepository companyRepository, EmployeeRepository employeeRepository, OfficeRepository officeRepository,
-                           PasswordEncoder encoder) {
+public class BasicInserts {
+    private final CompanyRepository companyRepository;
+    private final EmployeeRepository employeeRepository;
+    private final OfficeRepository officeRepository;
+    private final PasswordEncoder encoder;
 
     private static final String NBU_LOGISTICS = "NBU Logistics";
+
+    public BasicInserts(CompanyRepository companyRepository, EmployeeRepository employeeRepository, OfficeRepository officeRepository, PasswordEncoder encoder) {
+        this.companyRepository = companyRepository;
+        this.employeeRepository = employeeRepository;
+        this.officeRepository = officeRepository;
+        this.encoder = encoder;
+    }
 
     @PostConstruct
     public void basicInserts() {
@@ -40,7 +46,7 @@ public record BasicInserts(CompanyRepository companyRepository, EmployeeReposito
 
     private Company saveCompany(Company company) {
         Optional<Company> company1 = companyRepository.findByName(company.getName());
-        if (company1.isEmpty()) {
+        if (!company1.isPresent()) {
             company = companyRepository.save(company);
             return company;
         }
@@ -49,7 +55,7 @@ public record BasicInserts(CompanyRepository companyRepository, EmployeeReposito
 
     private Employee saveEmployee(Employee employee) {
         Optional<Employee> employeeOptional = employeeRepository.findByEmail(employee.getEmail());
-        if (employeeOptional.isEmpty()) {
+        if (!employeeOptional.isPresent()) {
             employee.setPassword(encoder.encode(employee.getPassword()));
             employee = employeeRepository.save(employee);
             return employee;
@@ -59,7 +65,7 @@ public record BasicInserts(CompanyRepository companyRepository, EmployeeReposito
 
     private Office saveOffice(Office office) {
         Optional<Office> officeOptional = officeRepository.findByName(office.getName());
-        if (officeOptional.isEmpty()) {
+        if (!officeOptional.isPresent()) {
             office = officeRepository.save(office);
             return office;
         }

@@ -4,8 +4,8 @@ spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/logistics-company?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: logistics-company
-    password: NBUcscb025
+    username: root
+    password: Root123*
     initialization-mode: always
   jpa:
     show-sql: true

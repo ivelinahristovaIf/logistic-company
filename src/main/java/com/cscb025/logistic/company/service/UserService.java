@@ -1,8 +1,5 @@
 package com.cscb025.logistic.company.service;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import lombok.AllArgsConstructor;
-
 import com.cscb025.logistic.company.config.JwtTokenUtil;
 import com.cscb025.logistic.company.controller.request.user.UserLoginRequestDTO;
 import com.cscb025.logistic.company.controller.response.user.UserLoginResponseDTO;
@@ -13,19 +10,21 @@ import com.cscb025.logistic.company.entity.User;
 import com.cscb025.logistic.company.exception.TokenExpiredException;
 import com.cscb025.logistic.company.repository.ClientRepository;
 import com.cscb025.logistic.company.repository.EmployeeRepository;
-
-import java.util.Optional;
-
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-@AllArgsConstructor
-public record UserService(ClientRepository clientRepository, EmployeeRepository employeeRepository,
-                          JwtTokenUtil jwtTokenUtil, PasswordEncoder encoder,
-                          JwtUserDetailsService jwtUserDetailsService) {
+public class UserService {
+    ClientRepository clientRepository;
+    EmployeeRepository employeeRepository;
+    JwtTokenUtil jwtTokenUtil;
+    PasswordEncoder encoder;
+    JwtUserDetailsService jwtUserDetailsService;
 
     private static final String USER_NOT_FOUND = "User not found!";
 
@@ -36,7 +35,7 @@ public record UserService(ClientRepository clientRepository, EmployeeRepository 
     public User findByEmail(String email) {
         User user;
         Optional<Employee> employeeOptional = employeeRepository.findByEmail(email);
-        if (employeeOptional.isPresent()) {
+        if (!employeeOptional.isPresent()) {
             Employee employee = employeeOptional.get();
             user = employee;
             user.setUid(employee.getUid());
@@ -64,8 +63,7 @@ public record UserService(ClientRepository clientRepository, EmployeeRepository 
 
         try {
             authenticate(authenticationRequest, user);
-        }
-        catch (ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
             throw new TokenExpiredException(TOKEN_EXPIRED);
         }
 

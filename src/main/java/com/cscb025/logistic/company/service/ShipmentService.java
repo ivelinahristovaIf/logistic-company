@@ -13,16 +13,26 @@ import com.cscb025.logistic.company.entity.Shipment;
 import com.cscb025.logistic.company.enums.ShipmentStatus;
 import com.cscb025.logistic.company.exception.EntityNotFoundException;
 import com.cscb025.logistic.company.repository.ShipmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 @Service
-public record ShipmentService(ShipmentRepository shipmentRepository, EmployeeService employeeService,
-                              ClientService clientService) {
+public class ShipmentService {
+    private final ShipmentRepository shipmentRepository;
+    private final EmployeeService employeeService;
+    private final ClientService clientService;
+
+    @Autowired
+    public ShipmentService(ShipmentRepository shipmentRepository, EmployeeService employeeService, ClientService clientService) {
+        this.shipmentRepository = shipmentRepository;
+        this.employeeService = employeeService;
+        this.clientService = clientService;
+    }
 
     public Double revenue(LocalDate startDate, LocalDate endDate) {
         List<Shipment> receivedIsBetween = shipmentRepository.findAllByDateReceivedIsBetween(startDate, endDate);
@@ -35,7 +45,7 @@ public record ShipmentService(ShipmentRepository shipmentRepository, EmployeeSer
     }
 
     public ShipmentRegisterResponseDTO register(RegisterShipmentRequestDTO registerShipmentRequest,
-            String loggedUserID) {
+                                                String loggedUserID) {
         final Employee officeWorker = employeeService.getEmployee(loggedUserID);
         final Client receiver = clientService.getClient(registerShipmentRequest.getReceiver());
         final Client sender = clientService.getClient(registerShipmentRequest.getSender());
@@ -50,9 +60,9 @@ public record ShipmentService(ShipmentRepository shipmentRepository, EmployeeSer
                 new ClientResponseDTO(sender.getEmail(), sender.getName(), sender.getPhone()));
     }
 
-    public ShipmentDTO update(final EditShipmentDTO editShipmentDTO) {
-        Shipment shipment = getShipment(editShipmentDTO.getShipmentId());
-        shipment.setStatus(ShipmentStatus.valueOf(editShipmentDTO.getStatus()));
+    public ShipmentDTO update(final String shipmentId, final String status) {
+        Shipment shipment = getShipment(shipmentId);
+        shipment.setStatus(ShipmentStatus.valueOf(status));
         shipment = shipmentRepository.save(shipment);
         return mapToDto(shipment);
     }
@@ -82,28 +92,28 @@ public record ShipmentService(ShipmentRepository shipmentRepository, EmployeeSer
 
     private Shipment getShipment(String uid) {
         final Optional<Shipment> employeeOptional = shipmentRepository.findById(uid);
-        if (employeeOptional.isEmpty()) {
+        if (!employeeOptional.isPresent()) {
             throw new EntityNotFoundException("No such shipment in the system!");
         }
         return employeeOptional.get();
     }
 
     public List<ShipmentDTO> findAll() {
-        return shipmentRepository.findAll().stream().map(this::mapToDto).toList();
+        return shipmentRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     public List<ShipmentDTO> findAllByEmployee(final String uid) {
         final Employee officeWorker = employeeService.getEmployee(uid);
-        return shipmentRepository.findAllByOfficeWorker(officeWorker).stream().map(this::mapToDto).toList();
+        return shipmentRepository.findAllByOfficeWorker(officeWorker).stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     public List<ShipmentDTO> findAllByStatus(final String status) {
-        return shipmentRepository.findAllByStatus(ShipmentStatus.NOT_RECEIVED).stream().map(this::mapToDto).toList();
+        return shipmentRepository.findAllByStatus(ShipmentStatus.NOT_RECEIVED).stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     public List<ShipmentDTO> findAllBySender(final String userId) {
         final Client client = clientService.getClient(userId);
-        return shipmentRepository.findAllBySender(client).stream().map(this::mapToDto).toList();
+        return shipmentRepository.findAllBySender(client).stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     public List<ShipmentDTO> findAllByReceiver(final String userId) {
@@ -111,6 +121,6 @@ public record ShipmentService(ShipmentRepository shipmentRepository, EmployeeSer
                 .findAllByReceiver(clientService.getClient(userId))
                 .stream()
                 .map(this::mapToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

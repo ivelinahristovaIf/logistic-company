@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
 @CrossOrigin(origins = "*")
 @AllArgsConstructor
-public class EmployeeController {
+public class AdminController {
 
     private final EmployeeService employeeService;
 

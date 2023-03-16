@@ -1,21 +1,24 @@
 package com.cscb025.logistic.company.service;
 
-import lombok.AllArgsConstructor;
-
-import com.cscb025.logistic.company.controller.request.admin.CompanyRequestDTO;
 import com.cscb025.logistic.company.controller.response.admin.CompanyResponseDTO;
 import com.cscb025.logistic.company.entity.Company;
 import com.cscb025.logistic.company.exception.EntityExistsException;
 import com.cscb025.logistic.company.exception.EntityNotFoundException;
 import com.cscb025.logistic.company.repository.CompanyRepository;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
-public record CompanyService(CompanyRepository companyRepository) {
+public class CompanyService {
+    private final CompanyRepository companyRepository;
+
+    @Autowired
+    public CompanyService(CompanyRepository companyRepository) {
+        this.companyRepository = companyRepository;
+    }
 
     public CompanyResponseDTO view(String companyId) {
         Company company = getCompany(companyId);
@@ -29,11 +32,11 @@ public record CompanyService(CompanyRepository companyRepository) {
         return new CompanyResponseDTO(company.getUid(), company.getName());
     }
 
-    public CompanyResponseDTO edit(CompanyRequestDTO companyRequestDTO) {
-        checkCompanyNameExists(companyRequestDTO.getName());
+    public CompanyResponseDTO edit(String uid, @Valid String name) {
+        checkCompanyNameExists(name);
 
-        Company company = getCompany(companyRequestDTO.getUid());
-        company.setName(companyRequestDTO.getName());
+        Company company = getCompany(uid);
+        company.setName(name);
 
         company = companyRepository.save(company);
         return new CompanyResponseDTO(company.getUid(), company.getName());
@@ -41,7 +44,7 @@ public record CompanyService(CompanyRepository companyRepository) {
 
     Company getCompany(String companyId) {
         Optional<Company> companyOptional = companyRepository.findById(companyId);
-        if (companyOptional.isEmpty()) {
+        if (!companyOptional.isPresent()) {
             throw new EntityNotFoundException("No such company found!");
         }
         return companyOptional.get();

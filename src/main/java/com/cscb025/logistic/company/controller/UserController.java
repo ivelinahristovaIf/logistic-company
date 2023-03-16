@@ -1,10 +1,6 @@
 package com.cscb025.logistic.company.controller;
 
-import com.cscb025.logistic.company.controller.request.user.ClientEditRequestDTO;
-import com.cscb025.logistic.company.controller.request.user.ClientRegistrationRequestDTO;
-import com.cscb025.logistic.company.controller.request.user.EmployeeEditRequestDTO;
-import com.cscb025.logistic.company.controller.request.user.EmployeeRegistrationRequestDTO;
-import com.cscb025.logistic.company.controller.request.user.UserLoginRequestDTO;
+import com.cscb025.logistic.company.controller.request.user.*;
 import com.cscb025.logistic.company.controller.response.ClientResponseDTO;
 import com.cscb025.logistic.company.controller.response.EmployeeResponseDTO;
 import com.cscb025.logistic.company.controller.response.user.UserLoginResponseDTO;
@@ -13,24 +9,15 @@ import com.cscb025.logistic.company.exception.TokenExpiredException;
 import com.cscb025.logistic.company.service.ClientService;
 import com.cscb025.logistic.company.service.EmployeeService;
 import com.cscb025.logistic.company.service.UserService;
-
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Controller
 @CrossOrigin(origins = "*")
@@ -42,6 +29,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired
     public UserController(EmployeeService employeeService, ClientService clientService, UserService userService) {
         this.employeeService = employeeService;
         this.clientService = clientService;
@@ -50,7 +38,7 @@ public class UserController {
 
     @PostMapping("/employee")
     public ResponseEntity<UserRegistrationResponseDTO> registerEmployee(
-            @ModelAttribute("userForm") @RequestBody EmployeeRegistrationRequestDTO userForm) {
+            @Valid @RequestBody EmployeeRegistrationRequestDTO userForm) {
         UserRegistrationResponseDTO responseDTO = employeeService.register(userForm);
         return ResponseEntity.ok(responseDTO);
     }

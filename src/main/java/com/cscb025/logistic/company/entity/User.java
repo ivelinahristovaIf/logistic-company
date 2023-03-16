@@ -1,8 +1,7 @@
 package com.cscb025.logistic.company.entity;
 
-import lombok.Data;
-
 import com.cscb025.logistic.company.enums.UserRole;
+import lombok.Data;
 
 @Data
 public abstract class User {
@@ -38,9 +37,11 @@ public abstract class User {
     }
 
     public String getPassword() {
-        if (this instanceof Employee employee) {
+        if (this instanceof Employee) {
+            Employee employee = (Employee) this;
             return employee.getPassword();
-        } else if (this instanceof Client client) {
+        } else if (this instanceof Client) {
+            Client client = (Client) this;
             return client.getPassword();
         }
         return this.password;

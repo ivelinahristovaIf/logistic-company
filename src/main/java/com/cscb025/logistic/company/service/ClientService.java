@@ -1,7 +1,5 @@
 package com.cscb025.logistic.company.service;
 
-import lombok.AllArgsConstructor;
-
 import com.cscb025.logistic.company.config.JwtTokenUtil;
 import com.cscb025.logistic.company.controller.request.user.ClientEditRequestDTO;
 import com.cscb025.logistic.company.controller.request.user.ClientRegistrationRequestDTO;
@@ -14,21 +12,33 @@ import com.cscb025.logistic.company.enums.UserRole;
 import com.cscb025.logistic.company.exception.EntityExistsException;
 import com.cscb025.logistic.company.exception.EntityNotFoundException;
 import com.cscb025.logistic.company.repository.ClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 @Service
-@AllArgsConstructor
-public record ClientService(ClientRepository clientRepository, CompanyService companyService, PasswordEncoder encoder,
-                            JwtUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+public class ClientService {
+    private final ClientRepository clientRepository;
+    private final CompanyService companyService;
+    private final PasswordEncoder encoder;
+    private final JwtUserDetailsService jwtUserDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     private static final String EMAIL_ALREADY_TAKEN = "Email is already taken!";
+
+    @Autowired
+    public ClientService(ClientRepository clientRepository, CompanyService companyService, PasswordEncoder encoder, JwtUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+        this.clientRepository = clientRepository;
+        this.companyService = companyService;
+        this.encoder = encoder;
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     public UserRegistrationResponseDTO register(ClientRegistrationRequestDTO user) {
         if (clientRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -75,7 +85,7 @@ public record ClientService(ClientRepository clientRepository, CompanyService co
 
     Client getClient(String uid) {
         Optional<Client> client = clientRepository.findById(uid);
-        if (client.isEmpty()) {
+        if (!client.isPresent()) {
             throw new EntityNotFoundException("No such user in the system!");
         }
         return client.get();

@@ -20,8 +20,4 @@ public class RegisterShipmentRequestDTO {
     @NotBlank(message = "Sender must not be empty!")
     private String sender;
 
-    private boolean isSent;
-
-    private boolean isReceived;
-
 }

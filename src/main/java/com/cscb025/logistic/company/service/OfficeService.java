@@ -8,12 +8,21 @@ import com.cscb025.logistic.company.entity.Office;
 import com.cscb025.logistic.company.exception.EntityExistsException;
 import com.cscb025.logistic.company.exception.EntityNotFoundException;
 import com.cscb025.logistic.company.repository.OfficeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public record OfficeService(OfficeRepository officeRepository, CompanyService companyService) {
+public class OfficeService {
+    private final OfficeRepository officeRepository;
+    private final CompanyService companyService;
+
+    @Autowired
+    public OfficeService(OfficeRepository officeRepository, CompanyService companyService) {
+        this.officeRepository = officeRepository;
+        this.companyService = companyService;
+    }
 
     public OfficeResponseDTO view(String companyId) {
         Office office = getOffice(companyId);
